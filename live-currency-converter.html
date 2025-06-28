@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Live Currency Converter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef2f3;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .container {
+      background: white;
+      max-width: 400px;
+      margin: auto;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+
+    input, select, button {
+      width: 80%;
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #218838;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Live Currency Converter</h2>
+  <input type="number" id="amount" placeholder="Enter amount" />
+  <select id="fromCurrency">
+    <option value="USD">US Dollar ($)</option>
+    <option value="NGN">Naira (₦)</option>
+    <option value="EUR">Euro (€)</option>
+    <option value="GBP">British Pound (£)</option>
+  </select>
+  <select id="toCurrency">
+    <option value="NGN">Naira (₦)</option>
+    <option value="USD">US Dollar ($)</option>
+    <option value="EUR">Euro (€)</option>
+    <option value="GBP">British Pound (£)</option>
+  </select>
+  <button onclick="convert()">Convert</button>
+  <div id="result"></div>
+</div>
+
+<script>
+  async function convert() {
+    const amount = parseFloat(document.getElementById("amount").value);
+    const from = document.getElementById("fromCurrency").value;
+    const to = document.getElementById("toCurrency").value;
+
+    if (isNaN(amount)) {
+      document.getElementById("result").innerText = "Please enter a valid number.";
+      return;
+    }
+
+    const url = `https://v6.exchangerate-api.com/v6/71beb7d8d8ae1478a778f72f/latest/${from}`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.result === "success") {
+        const rate = data.conversion_rates[to];
+        const converted = amount * rate;
+        document.getElementById("result").innerText =
+          `${amount} ${from} = ${converted.toFixed(2)} ${to}`;
+      } else {
+        document.getElementById("result").innerText = "Conversion failed. Try again.";
+      }
+    } catch (error) {
+      document.getElementById("result").innerText = "Error fetching rates.";
+    }
+  }
+</script>
+
+</body>
+</html>
